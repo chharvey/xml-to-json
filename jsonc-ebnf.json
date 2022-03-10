@@ -1,0 +1,129 @@
+{
+	"WHITESPACE": [
+		["\\u0009"],
+		["\\u000a"],
+		["\\u000d"],
+		["\\u0020"],
+	],
+	"COMMENTCHARS": [
+		[                          "'[^#x0a#x03]'"],
+		[{"prod": "COMMENTCHARS"}, "'[^#x0a#x03]'"],
+	],
+	"COMMENT": [
+		["#",                           "\\u000a"],
+		["#", {"prod": "COMMENTCHARS"}, "\\u000a"],
+	],
+	"KEYWORD": [
+		["null"],
+		["false"],
+		["true"],
+	],
+	"NUMBER": [
+		[{"prod": "INTEGER"},                                           ],
+		[{"prod": "INTEGER"}, {"prod": "FRACTION"},                     ],
+		[{"prod": "INTEGER"},                       {"prod": "EXPONENT"}],
+		[{"prod": "INTEGER"}, {"prod": "FRACTION"}, {"prod": "EXPONENT"}],
+	],
+	"INTEGER": [
+		[                {"prod": "DIGIT"}],
+		[     "'[1-9]'", {"prod": "DIGITS"}],
+		["-",            {"prod": "DIGIT"}],
+		["-", "'[1-9]'", {"prod": "DIGITS"}],
+	],
+	"FRACTION": [
+		[".", {"prod": "DIGITS"}],
+	],
+	"EXPONENT": [
+		["e",      {"prod": "DIGITS"}],
+		["e", "+", {"prod": "DIGITS"}],
+		["e", "-", {"prod": "DIGITS"}],
+	],
+	"DIGITS": [
+		[                    {"prod": "DIGIT"}],
+		[{"prod": "DIGITS"}, {"prod": "DIGIT"}],
+	],
+	"DIGIT": [
+		["'[0-9]'"],
+	],
+	"STRING": [
+		["\\u0022",                         "\\u0022"],
+		["\\u0022", {"prod": "CHARACTERS"}, "\\u0022"],
+	],
+	"CHARACTERS": [
+		[                        {"prod": "CHARACTER"}],
+		[{"prod": "CHARACTERS"}, {"prod": "CHARACTER"}],
+	],
+	"CHARACTER": [
+		["'[#x09#x0a#x0d]'"],
+		["'[#x20-#x21#x23-#x5b#x5d-#x10ffff]'"], # excluding U+0022 (quote) & U+005C (backslash)
+		["\\", {"prod": "ESCAPE"}],
+	],
+	"ESCAPE": [
+		["\\u0022"],
+		["\\"],
+		["/"], ["b"], ["f"], ["n"], ["r"], ["t"],
+		["u", {"prod": "HEX"}, {"prod": "HEX"}, {"prod": "HEX"}, {"prod": "HEX"}],
+	],
+	"HEX": [
+		["'[0-9a-f]'"]
+	],
+	"Ignore": [
+		[                    {"prod": "WHITESPACE"}],
+		[                    {"prod": "COMMENT"}],
+		[{"prod": "Ignore"}, {"prod": "WHITESPACE"}],
+		[{"prod": "Ignore"}, {"prod": "COMMENT"}],
+	],
+	"Comma": [
+		[                    ","                    ],
+		[                    ",", {"prod": "Ignore"}],
+		[{"prod": "Ignore"}, ","                    ],
+		[{"prod": "Ignore"}, ",", {"prod": "Ignore"}],
+	],
+	"Value": [
+		[{"prod": "KEYWORD"}],
+		[{"prod": "NUMBER"}],
+		[{"prod": "STRING"}],
+		[{"prod": "Array"}],
+		[{"prod": "Object"}],
+	],
+	"Property": [
+		[{"prod": "STRING"},                     ":",                     {"prod": "Value"}],
+		[{"prod": "STRING"},                     ":", {"prod": "Ignore"}, {"prod": "Value"}],
+		[{"prod": "STRING"}, {"prod": "Ignore"}, ":",                     {"prod": "Value"}],
+		[{"prod": "STRING"}, {"prod": "Ignore"}, ":", {"prod": "Ignore"}, {"prod": "Value"}],
+	],
+	"Values": [
+		[                                       {"prod": "Value"}],
+		[{"prod": "Values"}, {"prod": "Comma"}, {"prod": "Value"}],
+	],
+	"Properties": [
+		[                                           {"prod": "Property"}],
+		[{"prod": "Properties"}, {"prod": "Comma"}, {"prod": "Property"}],
+	],
+	"Array": [
+		["[",                     "]"],
+		["[", {"prod": "Ignore"}, "]"],
+		["[",                     {"prod": "Values"},                     "]"],
+		["[",                     {"prod": "Values"}, {"prod": "Ignore"}, "]"],
+		["[",                     {"prod": "Values"}, {"prod": "Comma"},  "]"],
+		["[", {"prod": "Ignore"}, {"prod": "Values"},                     "]"],
+		["[", {"prod": "Ignore"}, {"prod": "Values"}, {"prod": "Ignore"}, "]"],
+		["[", {"prod": "Ignore"}, {"prod": "Values"}, {"prod": "Comma"},  "]"],
+		["[", {"prod": "Comma"},  {"prod": "Values"},                     "]"],
+		["[", {"prod": "Comma"},  {"prod": "Values"}, {"prod": "Ignore"}, "]"],
+		["[", {"prod": "Comma"},  {"prod": "Values"}, {"prod": "Comma"},  "]"],
+	],
+	"Object": [
+		["{",                     "}"],
+		["{", {"prod": "Ignore"}, "}"],
+		["{",                      {"prod": "Properties"},                     "}"],
+		["{",                      {"prod": "Properties"}, {"prod": "Ignore"}, "}"],
+		["{",                      {"prod": "Properties"}, {"prod": "Comma"},  "}"],
+		["{", {"prod": "Ignore"},  {"prod": "Properties"},                     "}"],
+		["{", {"prod": "Ignore"},  {"prod": "Properties"}, {"prod": "Ignore"}, "}"],
+		["{", {"prod": "Ignore"},  {"prod": "Properties"}, {"prod": "Comma"},  "}"],
+		["{", {"prod": "Comma"},   {"prod": "Properties"},                     "}"],
+		["{", {"prod": "Comma"},   {"prod": "Properties"}, {"prod": "Ignore"}, "}"],
+		["{", {"prod": "Comma"},   {"prod": "Properties"}, {"prod": "Comma"},  "}"],
+	],
+}

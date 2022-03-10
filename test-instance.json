@@ -1,0 +1,6 @@
+{
+	"$schema": "./xmldocument.jsd",
+	// hello
+	"#text": 2,
+	"name": 42
+}

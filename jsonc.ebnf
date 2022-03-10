@@ -1,0 +1,67 @@
+WHITESPACE
+	:::= #x09 | #x0a | #x0d | #x20;
+
+COMMENT
+	:::= "#" [^#x0a#x03]* #x0a;
+
+KEYWORD
+	:::= "null" | "false" | "true";
+
+NUMBER
+	::= INTEGER FRACTION? EXPONENT?;
+
+INTEGER :::= "-"? (DIGIT | [1-9] DIGIT+);
+FRACTION :::= "." DIGIT+;
+EXPONENT :::= "e" ("+" | "-")? DIGIT+;
+DIGIT :::= [0-9];
+
+STRING
+	:::= #x22 CHARACTER* #x22;
+
+CHARACTER :::=
+	| [#x09#x0a#x0d]
+	| [#x20-#x21#x23-#x5b#x5d-#x10ffff] // excluding U+0022 (quote) & U+005C (backslash)
+	| "\" ESCAPE
+;
+ESCAPE :::=
+	| #x22
+	| "\"
+	| "/"
+	| "b"
+	| "f"
+	| "n"
+	| "r"
+	| "t"
+	| "u" HEX HEX HEX HEX
+;
+HEX :::= [0-9a-f];
+
+
+
+Ignore
+	::= (WHITESPACE | COMMENT)+;
+
+Comma
+	::= Ignore? "," Ignore?;
+
+Elision ::=
+	| Ignore
+	| Ignore? "," Ignore?
+;
+
+Value ::=
+	| KEYWORD
+	| NUMBER
+	| STRING
+	| Array
+	| Object
+;
+
+Property
+	::= STRING Ignore? ":" Ignore? Value;
+
+Values     ::= (Values     Comma)? Value;
+Properties ::= (Properties Comma)? Property;
+
+Array  ::= "[" (Ignore? | (Ignore | Comma)? Values     (Ignore | Comma)?) "]";
+Object ::= "{" (Ignore? | (Ignore | Comma)? Properties (Ignore | Comma)?) "}";

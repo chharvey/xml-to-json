@@ -1,0 +1,63 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	// "$schema": "http://json-schema.org/draft-07/schema",
+	"$id": "http://chharvey.github.io/xml-to-json/",
+	"title": "XML Document",
+	"description": "An XML document.",
+	"dependencies": ["x", "y"],
+	"$comment": ["one"],
+	"definitions": {
+		"XMLElement": {
+			"type": "object",
+			"$comment": ["two"],
+			"allOf": [
+				{
+					"patternProperties": {
+						"^@[:A-Za-z_][:A-Za-z0-9_\\-\\.]*$": {
+							"description": "A reference to an attribute.",
+							"type": "string"
+						}
+					}
+				},
+				{
+					"anyOf": [
+						{
+							"required": ["#text"],
+							"properties": {
+								"#text": {"type": "string"}
+							},
+							"patternProperties": {
+								"^[:A-Za-z_][:A-Za-z0-9_\\-\\.]*$": false
+							}
+						},
+						{
+							"properties": {
+								"#content": {"type": "array"}
+							},
+							"patternProperties": {
+								"^[:A-Za-z_][:A-Za-z0-9_\\-\\.]*$": {
+									"description": "A reference to an element or array of elements.",
+									"oneOf": [
+										{"$ref": "#/definitions/XMLElement"},
+										{"type": "array", "items": {"$ref": "#/definitions/XMLElement"}}
+									]
+								}
+							}
+						},
+						{
+							"properties": {
+								"#text": {"type": "array"},
+								"#content": {"type": "array"}
+							}
+						}
+					]
+				}
+			]
+		}
+	},
+	"type": "object",
+	// "maxProperties": 1,
+	"additionalProperties": {
+		"$ref": "#/definitions/XMLElement"
+	}
+}
